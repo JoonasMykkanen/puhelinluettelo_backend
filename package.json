@@ -1,0 +1,27 @@
+{
+  "name": "puhelinluettelo_backend",
+  "version": "1.0.0",
+  "description": "full stack open part 3 ex 3.1-3.22",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joonasmykkanen/fullstack.git"
+  },
+  "author": "Joonas Mykkanen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joonasmykkanen/fullstack/issues"
+  },
+  "homepage": "https://github.com/joonasmykkanen/fullstack#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
