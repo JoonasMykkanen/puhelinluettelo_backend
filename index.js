@@ -21,12 +21,27 @@ let persons = [
 	}
 ]
 
+app.use((req, res, next) => {
+	req.timestamp = new Date().toLocaleString('en-US', {
+	  timeZone: 'Europe/Helsinki',
+	  timeZoneName: 'long',
+	})
+	next()
+})
+
 app.get('/', (req, res) => {
 	res.send('<p>puhelinluettelo backend</p>')
 })
 
 app.get('/api/persons', (req, res) => {
 	res.json(persons)
+})
+
+app.get('/api/info', (req, res) => {
+	const len = persons.length
+	const time = req.timestamp	
+	const response = `<p>Phonebook has info for ${len} people.</p><p>${time}</p>`
+	res.send(response)
 })
 
 const PORT = 3001
