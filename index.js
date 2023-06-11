@@ -1,3 +1,4 @@
+const validatePerson = require('./src/validation')
 const express = require('express')
 const app = express()
 
@@ -61,16 +62,16 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-	const id = Math.floor(Math.random() * 1000000)
-	if (!req.body.name) {
-		return res.status(400).json({
-			error: 'Name missing'
-		})
+	const { name, number } = req.body
+	const validationError = validatePerson(name, number, persons)
+	if (validationError) {
+		return res.status(400).json(validationError)
 	}
+	const id = Math.floor(Math.random() * 1000000)
 	const person = {
 		id: id,
-		name:req.body.name,
-		number: req.body.number
+		name: name,
+		number: number
 	}
 	persons = persons.concat(person)
 	res.json(person)
