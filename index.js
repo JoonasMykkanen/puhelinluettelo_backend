@@ -3,6 +3,14 @@ const app = express()
 
 app.use(express.json())
 
+app.use((req, res, next) => {
+	req.timestamp = new Date().toLocaleString('en-US', {
+	  timeZone: 'Europe/Helsinki',
+	  timeZoneName: 'long',
+	})
+	next()
+})
+
 let persons = [
 	{
 	  id: 1,
@@ -20,14 +28,6 @@ let persons = [
 	  number: "39-44-123233"
 	}
 ]
-
-app.use((req, res, next) => {
-	req.timestamp = new Date().toLocaleString('en-US', {
-	  timeZone: 'Europe/Helsinki',
-	  timeZoneName: 'long',
-	})
-	next()
-})
 
 app.get('/', (req, res) => {
 	res.send('<p>puhelinluettelo backend</p>')
@@ -52,6 +52,12 @@ app.get('/api/persons/:id', (req, res) => {
 	} else {
 		res.status(404).end()
 	}
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+		const id = Number(req.params.id)
+		persons = persons.filter(person => person.id !== id)
+		res.status(204).end()
 })
 
 const PORT = 3001
