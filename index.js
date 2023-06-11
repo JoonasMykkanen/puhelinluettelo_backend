@@ -1,11 +1,14 @@
-const unknownEndpoint = require('./src/middleware')
+const {unknownEndpoint, postToken} = require('./src/middleware')
 const validatePerson = require('./src/validation')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
+const postdata = postToken()
+const format = ':method :url :status :res[content-length] - :response-time ms :postdata'
+
+app.use(morgan(format))
 app.use(express.json())
-app.use(morgan('tiny'))
 app.use((req, res, next) => {
 	req.timestamp = new Date().toLocaleString('en-US', {
 	  timeZone: 'Europe/Helsinki',

@@ -1,13 +1,20 @@
-const requestLogger = (request, response, next) => {
-	console.log('Method:', request.method)
-	console.log('Path:  ', request.path)
-	console.log('Body:  ', request.body)
-	console.log('---')
-	next()
+const morgan = require('morgan')
+
+const postToken = () => {
+	morgan.token('postdata', function (req, res) {
+		if (req.method === 'POST') {
+			return JSON.stringify(req.body)
+		} else {
+			return ''
+		}
+	})
 }
 
-const unknownEndpoint = (request, response) => {
-	response.status(404).send({ error: 'unknown endpoint' })
+const unknownEndpoint = (req, res) => {
+	req.status(404).send({ error: 'unknown endpoint' })
 }
 
-module.exports = unknownEndpoint
+module.exports = {
+	unknownEndpoint,
+	postToken
+}
