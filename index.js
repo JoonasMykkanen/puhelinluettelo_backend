@@ -1,9 +1,11 @@
+const unknownEndpoint = require('./src/middleware')
 const validatePerson = require('./src/validation')
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
-
+app.use(morgan('tiny'))
 app.use((req, res, next) => {
 	req.timestamp = new Date().toLocaleString('en-US', {
 	  timeZone: 'Europe/Helsinki',
@@ -76,6 +78,8 @@ app.post('/api/persons', (req, res) => {
 	persons = persons.concat(person)
 	res.json(person)
 })
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
