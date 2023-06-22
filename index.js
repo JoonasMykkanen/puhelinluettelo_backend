@@ -11,6 +11,7 @@ const format = ':method :url :status :res[content-length] - :response-time ms :p
 app.use(cors())
 app.use(morgan(format))
 app.use(express.json())
+app.use(express.static('build'))
 app.use((req, res, next) => {
 	req.timestamp = new Date().toLocaleString('en-US', {
 	  timeZone: 'Europe/Helsinki',
