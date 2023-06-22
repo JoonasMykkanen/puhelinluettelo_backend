@@ -2,11 +2,13 @@ const {unknownEndpoint, postToken} = require('./src/middleware')
 const validatePerson = require('./src/validation')
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 
 const postdata = postToken()
 const format = ':method :url :status :res[content-length] - :response-time ms :postdata'
 
+app.use(cors())
 app.use(morgan(format))
 app.use(express.json())
 app.use((req, res, next) => {
@@ -84,7 +86,7 @@ app.post('/api/persons', (req, res) => {
 
 app.use(unknownEndpoint)
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`)
 })

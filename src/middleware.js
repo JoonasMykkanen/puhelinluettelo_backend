@@ -11,7 +11,7 @@ const postToken = () => {
 }
 
 const unknownEndpoint = (req, res) => {
-	req.status(404).send({ error: 'unknown endpoint' })
+	res.status(404).send({ error: 'unknown endpoint' })
 }
 
 module.exports = {
