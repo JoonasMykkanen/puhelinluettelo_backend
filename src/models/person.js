@@ -12,8 +12,16 @@ mongoose.connect(process.env.MONGODB_URI)
 	})
 const personSchema = new mongoose.Schema({
 	id: String,
-	name: String,
-	number: String,
+	name: {
+		type: String,
+		minlength: 1,
+		required: true
+	},
+	number: {
+		type: String,
+		minlength: 1,
+		required: true
+	},
 })
 personSchema.set('toJSON', {
 	transform: (document, returnedObject) => {

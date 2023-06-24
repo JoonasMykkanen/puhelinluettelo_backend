@@ -30,7 +30,7 @@ app.get('/api/persons', (req, res) => {
 app.get('/api/info', async (req, res) => {
 	const persons = await Person.find({})
 	if (persons === undefined) {
-		return response.status(400).json({ error: 'error with db' })
+		return response.status(400).json({error: 'error with db'})
 	}
 	const len = persons.length
 	const time = req.timestamp	
@@ -64,7 +64,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 app.post('/api/persons', async (req, res) => {
 	const persons = await Person.find({})
 	if (persons === undefined) {
-		return response.status(400).json({ error: 'error with db' })
+		return response.status(400).json({error: 'error with db'})
 	}
 	const { name, number } = req.body
 	const validationError = validatePerson(name, number, persons)
@@ -83,16 +83,15 @@ app.post('/api/persons', async (req, res) => {
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
-	const person = {
-		id: req.params.id,
-		name: req.body.name,
-		number: req.body.number,
-	}
-	Person.findByIdAndUpdate(req.params.id, person, { new: true })
-    	.then(updatedPerson => {
-      		res.json(updatedPerson)
-    	})
-    	.catch(error => next(error))
+	const {name, number} = req.body
+	Person.findByIdAndUpdate(
+		req.params.id,
+		{name, number}, 
+		{new: true, runValidators: true, contex: 'query'})
+			.then(updatedPerson => {
+				res.json(updatedPerson)
+			})
+			.catch(error => next(error))
 })
 
 // Error handling
