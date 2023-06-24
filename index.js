@@ -18,7 +18,7 @@ app.use(express.json())
 app.use(morgan(format))
 app.use(mw.requestLogger)
 
-app.get('/', (req, res) => { res.send('<p>puhelinluettelo backend</p>') })
+app.get('/', (req, res, next) => { res.send('<p>puhelinluettelo backend</p>') })
 
 app.get('/api/persons', (req, res) => {
 	Person.find({}).then(persons => {
@@ -27,7 +27,7 @@ app.get('/api/persons', (req, res) => {
 	.catch(error => next(error))
 })
 
-app.get('/api/info', async (req, res) => {
+app.get('/api/info', async (req, res, next) => {
 	const persons = await Person.find({})
 	if (persons === undefined) {
 		return response.status(400).json({error: 'error with db'})
@@ -61,7 +61,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 		.catch(error => next(error))
 })
 
-app.post('/api/persons', async (req, res) => {
+app.post('/api/persons', async (req, res, next) => {
 	const persons = await Person.find({})
 	if (persons === undefined) {
 		return response.status(400).json({error: 'error with db'})

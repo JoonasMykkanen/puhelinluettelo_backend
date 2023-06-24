@@ -69,7 +69,10 @@ const App = () => {
 					console.log('added new item to list')
 					setSuccessMessage(`${newName} succesfully added to the phonebook!`)
 				})
-				.catch(error => {console.log('error with creating new person')})
+				.catch(error => {
+					setErrorMessage(`${error.response.data.message}`)
+					console.log('error with creating new person')
+				})
 		}
 		setNewName('')
 		setNumber('')

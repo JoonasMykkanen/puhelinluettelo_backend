@@ -15,12 +15,11 @@ const unknownEndpoint = (req, res) => {
 }
 
 const errorHandler = (error, req, res, next) => {
-	console.log(error.message)
 
 	if (error.name === 'CastError') {
 		return res.status(400).send({error: 'malformatted id'})
 	} else if (error.name === 'ValidationError') {
-		return res.status(400).send({error: 'invalid input'})
+		return res.status(400).send(error)
 	} else if (error.name === 'DuplicateKeyError') {
 		return res.status(409).send({error: 'duplicate key'})
 	} else if (error.name === 'DocumentNotFoundError') {

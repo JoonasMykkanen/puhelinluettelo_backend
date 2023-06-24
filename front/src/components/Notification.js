@@ -1,4 +1,4 @@
-const notificationDelay = 2000
+const notificationDelay = 5000
 
 const Error = ({ message, action }) => {
 	if (message === null) {
