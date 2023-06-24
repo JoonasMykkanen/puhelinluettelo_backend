@@ -70,7 +70,7 @@ const List = ( {persons, filter, action} ) => {
 				))}
 			</ul>
 		</>
-	)
- }
+	)	
+}
 
 export { List, PersonForm, FilterForm }

@@ -1,29 +1,22 @@
-const {unknownEndpoint, postToken} = require('./src/middleware')
 const validatePerson = require('./src/validation')
 const Person = require('./src/models/person')
-const mongoose = require('mongoose')
+const mw = require('./src/middleware')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-require('dotenv').config()
 const app = express()
 
 // Morgan init to format post data to JSON
-const postdata = postToken()
+const postdata = mw.postToken()
 const format = ':method :url :status :res[content-length] - :response-time ms :postdata'
 
 // Middleware
-app.use(cors())
-app.use(morgan(format))
-app.use(express.json())
+// some functions were moved to middleware.js to keep index.js clean
 app.use(express.static('build'))
-app.use((req, res, next) => {
-	req.timestamp = new Date().toLocaleString('en-US', {
-	  timeZone: 'Europe/Helsinki',
-	  timeZoneName: 'long',
-	})
-	next()
-})
+app.use(cors())
+app.use(express.json())
+app.use(morgan(format))
+app.use(mw.requestLogger)
 
 app.get('/', (req, res) => { res.send('<p>puhelinluettelo backend</p>') })
 
@@ -31,6 +24,7 @@ app.get('/api/persons', (req, res) => {
 	Person.find({}).then(persons => {
 		res.json(persons)
 	})
+	.catch(error => next(error))
 })
 
 app.get('/api/info', async (req, res) => {
@@ -46,18 +40,25 @@ app.get('/api/info', async (req, res) => {
 
 app.get('/api/persons/:id', (req, res) => {
 	Person.findById(req.params.id).then(person => {
-		res.json(person)
+		if (person) {
+			res.json(person)
+		} else {
+			response.status(404).end()
+		}
 	})
+	.catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', async (req, res) => {
-		const id = Number(req.params.id)
-		const persons = await Person.find({})
-		if (persons === undefined) {
-			return response.status(400).json({ error: 'error with db' })
-		}
-		// functionality for deleting is not yet there
-		res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+	Person.findByIdAndRemove(req.params.id)
+		.then(person => {
+			if (person) {
+				res.status(204).end()
+			} else {
+				res.status(404).send({error: 'person not found'})
+			}
+		})
+		.catch(error => next(error))
 })
 
 app.post('/api/persons', async (req, res) => {
@@ -70,21 +71,34 @@ app.post('/api/persons', async (req, res) => {
 	if (validationError) {
 		return res.status(400).json(validationError)
 	}
-	const id = Math.floor(Math.random() * 1000000)
 	const newPerson = new Person ({
-		id: id,
+		id: req.params.id,
 		name: name,
 		number: number
 	})
 	newPerson.save().then(savedPerson => {
 		res.json(savedPerson)
 	})
+	.catch(error => next(error))
 })
 
-// Handle error case if page does not exist
-app.use(unknownEndpoint)
+app.put('/api/persons/:id', (req, res, next) => {
+	const person = {
+		id: req.params.id,
+		name: req.body.name,
+		number: req.body.number,
+	}
+	Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    	.then(updatedPerson => {
+      		res.json(updatedPerson)
+    	})
+    	.catch(error => next(error))
+})
 
-// Actual server stuff
+// Error handling
+app.use(mw.unknownEndpoint)
+app.use(mw.errorHandler)
+
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`)

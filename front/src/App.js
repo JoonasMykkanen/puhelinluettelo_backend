@@ -21,49 +21,51 @@ const App = () => {
 			.catch(error => {console.log('could not get list from server')})
 	}, [])
 
-	const updatePersonalInfo = (id) => {
-		const person = persons[id]
+	const updatePersonalInfo = (person) => {
 		if (window.confirm(`${person.name} is already in phonebook, update number?`)) {
 			console.log('user accepted update prompt')
-			console.log(`updating ${id} aka ${person.name} ${newNumber} info`)
-			const newObject = {name: person.name, number: newNumber}
-			pbService.update(id, newObject)
-				.then(updatedList => {
+			const newObject = { id: person.id, name: person.name, number: newNumber }
+			pbService.update(newObject.id, newObject)
+				.then(updatedPerson => {
 					const updatedPersons = [...persons]
-					updatedPersons[id] = { ...updatedPersons[id], name: person.name, number: newNumber }
-					setPersons(updatedPersons)
-					console.log('updated number succesfully')
+					const index = updatedPersons.findIndex(p => p.id === person.id)
+					if (index !== -1) {
+						updatedPersons[index] = updatedPerson
+						setPersons(updatedPersons)
+						console.log('updated number successfully')
+					}
 				})
-				.catch(error => 
-					{setErrorMessage(`${person.name} information has been deleted from server`)})
+				.catch(error => {
+					setErrorMessage(`${person.name} information has been deleted from server`)
 					pbService.getAll().then(list => {setPersons(list)})
 						.catch(error => {console.log('could not get list from server')})
+				})
 		} else {
 			setErrorMessage('Cancelled..')
 			console.log('user rejected update prompt')
 		}
 	}
 
-	const  checkList = (name) => {
-		const lowerName = name.toLowerCase()
-		for (let i = 0; i < persons.length; i++) {
-			const lowerPersonsName = persons[i].name.toLowerCase()
-			if (lowerPersonsName === lowerName) {
-				updatePersonalInfo(i)
-				return (true)
-			}
+	const checkList = (newItem) => {
+		const lowerName = newItem.name.toLowerCase()
+		const person = persons.find((person) => person.name.toLowerCase() === lowerName)
+		if (person) {
+			updatePersonalInfo(person)
+			return true
+		} else {
+			return false
 		}
-		return (false)
 	}
+	
 
 	const addButton = (event) => {
 		event.preventDefault()
 		const newItem = {name: newName, number: newNumber}
-		if (checkList(newName) === false) {
+		if (checkList(newItem) === false) {
 			pbService
 				.create(newItem)
-				.then(updatedList => {
-					setPersons([...persons, {name: newName, number: newNumber}])
+				.then(newPerson => {
+					setPersons([...persons, newPerson])
 					console.log('added new item to list')
 					setSuccessMessage(`${newName} succesfully added to the phonebook!`)
 				})
