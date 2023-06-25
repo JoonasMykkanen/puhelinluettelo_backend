@@ -1,7 +1,7 @@
 const morgan = require('morgan')
 
 const postToken = () => {
-	morgan.token('postdata', function (req, res) {
+	morgan.token('postdata', function (req) {
 		if (req.method === 'POST') {
 			return JSON.stringify(req.body)
 		} else {
@@ -17,13 +17,13 @@ const unknownEndpoint = (req, res) => {
 const errorHandler = (error, req, res, next) => {
 
 	if (error.name === 'CastError') {
-		return res.status(400).send({error: 'malformatted id'})
+		return res.status(400).send({ error: 'malformatted id' })
 	} else if (error.name === 'ValidationError') {
 		return res.status(400).send(error)
 	} else if (error.name === 'DuplicateKeyError') {
-		return res.status(409).send({error: 'duplicate key'})
+		return res.status(409).send({ error: 'duplicate key' })
 	} else if (error.name === 'DocumentNotFoundError') {
-		return res.status(404).send({error: 'document not found'})
+		return res.status(404).send({ error: 'document not found' })
 	}
 
 	next(error)
@@ -34,9 +34,9 @@ const requestLogger = (req, res, next) => {
 	req.timestamp = new Date().toLocaleString('en-US', {
 		timeZone: 'Europe/Helsinki',
 		timeZoneName: 'long',
-		})
-		next()
-} 
+	})
+	next()
+}
 
 const mw = {
 	unknownEndpoint,

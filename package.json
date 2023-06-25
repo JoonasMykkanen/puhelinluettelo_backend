@@ -8,7 +8,8 @@
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,8 @@
   },
   "homepage": "https://github.com/joonasmykkanen/fullstack#readme",
   "devDependencies": {
+    "eslint": "^8.43.0",
+    "eslint-plugin-react": "^7.32.2",
     "nodemon": "^2.0.22"
   },
   "dependencies": {
